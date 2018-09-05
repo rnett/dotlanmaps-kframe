@@ -2,7 +2,7 @@ package com.rnett.ligraph.eve.dotlanmaps.kframe
 
 import com.rnett.kframe.dom.Element
 import com.rnett.kframe.dom.Style
-import com.rnett.kframe.dom.svg.*
+import com.rnett.kframe.elements.*
 import com.rnett.ligraph.eve.dotlanmaps.*
 
 fun Element.dotlanMap(displayMap: DisplayRegion, width: Int = displayMap.width, height: Int = displayMap.height) = DotlanMapElement(displayMap, width, height, this)
@@ -21,7 +21,7 @@ fun Element.dotlanMap(regionID: Int, scale: Double = 1.0) = this.dotlanMap(Dotla
 
 
 //could probably have just used base and relied on svg for scaling
-class DotlanMapElement(val displayMap: DisplayRegion, width: Int, height: Int, parent: Element) : Svg(parent, {}, "svg", "map-${displayMap.base.regionID}", Style()) {
+class DotlanMapElement(val displayMap: DisplayRegion, width: Int, height: Int, parent: Element) : Svg(parent, {}, "svg", "","id" to "map-${displayMap.base.regionID}") {
 
     constructor(displayMap: DisplayRegion, parent: Element) : this(displayMap, displayMap.width, displayMap.height, parent)
 
@@ -60,7 +60,7 @@ class DotlanMapElement(val displayMap: DisplayRegion, width: Int, height: Int, p
         removeAura(systemID)
 
         auraG.rect{
-            fill="url(#${gradient(color, intensity)})"
+            fill="url(#${this@DotlanMapElement.gradient(color, intensity)})"
             width = system.systemRect.width.toDouble() + 50
             height = system.systemRect.height.toDouble() + 50
             x = system.displaySystem.xPos - 25 + system.systemRect.x.toDouble()
@@ -96,12 +96,12 @@ class DotlanMapElement(val displayMap: DisplayRegion, width: Int, height: Int, p
 
         defs {
             g("regionSystems") {
-                displayMap.systems.values.filter { it.base.inRegion }.forEach {
+                this@DotlanMapElement.displayMap.systems.values.filter { it.base.inRegion }.forEach {
                     mutSystems[it.base.systemID] = DotlanSystemElement(it, this@DotlanMapElement, this@g)
                 }
             }
             g("externalSystems") {
-                displayMap.systems.values.filter { !it.base.inRegion }.forEach {
+                this@DotlanMapElement.displayMap.systems.values.filter { !it.base.inRegion }.forEach {
                     mutSystems[it.base.systemID] = DotlanSystemElement(it, this@DotlanMapElement, this@g)
                 }
             }
@@ -115,13 +115,13 @@ class DotlanMapElement(val displayMap: DisplayRegion, width: Int, height: Int, p
         }
 
         jumpsG = g("jumps") {
-            displayMap.jumps.forEach {
+            this@DotlanMapElement.displayMap.jumps.forEach {
                 mutJumps.add(DotlanJumpElement(it, this@DotlanMapElement, this@g))
             }
         }
 
         regionSysG = g("regionSysUse"){
-            systems.values.filter { it.system.inRegion }.forEach {
+            this@DotlanMapElement.systems.values.filter { it.system.inRegion }.forEach {
                 use(it, "sysUse-${it.system.systemName}"){
                     x = it.displaySystem.xPos
                     y = it.displaySystem.yPos
@@ -129,7 +129,7 @@ class DotlanMapElement(val displayMap: DisplayRegion, width: Int, height: Int, p
             }
         }
         externalSysG = g("externalSysUse"){
-            systems.values.filter { !it.system.inRegion }.forEach {
+            this@DotlanMapElement.systems.values.filter { !it.system.inRegion }.forEach {
                 use(it, "sysUse-${it.system.systemName}"){
                     x = it.displaySystem.xPos
                     y = it.displaySystem.yPos
@@ -139,7 +139,7 @@ class DotlanMapElement(val displayMap: DisplayRegion, width: Int, height: Int, p
     }
 }
 
-class DotlanJumpElement(val displayJump: DisplayJump, val regionMap: DotlanMapElement, parent: Svg?) : SvgElement(parent, {}, "line", "jump-${displayJump.base.startSystemID}-${displayJump.base.endSystemID}", Style()){
+class DotlanJumpElement(val displayJump: DisplayJump, val regionMap: DotlanMapElement, parent: Svg?) : SvgElement(parent, {}, "line", "", "id" to "jump-${displayJump.base.startSystemID}-${displayJump.base.endSystemID}"){
     val jump = displayJump.base
 
     init{
@@ -163,7 +163,7 @@ class DotlanJumpElement(val displayJump: DisplayJump, val regionMap: DotlanMapEl
     }
 }
 
-class DotlanSystemElement(val displaySystem: DisplaySystem, val regionMap: DotlanMapElement, parent: Svg?) : SvgElement(parent, {}, "symbol", "system-${displaySystem.base.systemID}", Style()){
+class DotlanSystemElement(val displaySystem: DisplaySystem, val regionMap: DotlanMapElement, parent: Svg?) : SvgElement(parent, {}, "symbol", "", "id" to "system-${displaySystem.base.systemID}"){
     val system = displaySystem.base
 
     val systemRect: SvgElement
@@ -173,22 +173,22 @@ class DotlanSystemElement(val displaySystem: DisplaySystem, val regionMap: Dotla
     init{
         systemRect = if(system.inRegion) {
             rect("system") {
-                x = 4 * displaySystem.scaleX
-                y = 3.5 * displaySystem.scaleY
-                rx = 11 * displaySystem.scaleX
-                ry = 11 * displaySystem.scaleY
-                width = 50 * displaySystem.scaleX
-                height = 22 * displaySystem.scaleY
+                x = 4 * this@DotlanSystemElement.displaySystem.scaleX
+                y = 3.5 * this@DotlanSystemElement.displaySystem.scaleY
+                rx = 11 * this@DotlanSystemElement.displaySystem.scaleX
+                ry = 11 * this@DotlanSystemElement.displaySystem.scaleY
+                width = 50 * this@DotlanSystemElement.displaySystem.scaleX
+                height = 22 * this@DotlanSystemElement.displaySystem.scaleY
                 fill=Style.hex("e6e6e6")
                 strokeWidth = 1.0
                 stroke = "black"
             }
         } else {
             rect("system") {
-                x = 3.5 * displaySystem.scaleX
-                y = 3.5 * displaySystem.scaleY
-                width = 50 * displaySystem.scaleX
-                height = 22 * displaySystem.scaleY
+                x = 3.5 * this@DotlanSystemElement.displaySystem.scaleX
+                y = 3.5 * this@DotlanSystemElement.displaySystem.scaleY
+                width = 50 * this@DotlanSystemElement.displaySystem.scaleX
+                height = 22 * this@DotlanSystemElement.displaySystem.scaleY
                 fill=Style.hex("b3b3b3")
                 strokeWidth = 1.0
                 stroke = "black"
@@ -197,28 +197,28 @@ class DotlanSystemElement(val displaySystem: DisplaySystem, val regionMap: Dotla
 
         if(system.inRegion) {
             svgText("systemName") {
-                +system.systemName
-                x = 28 * displaySystem.scaleX
-                y = 17 * displaySystem.scaleY
+                +this@DotlanSystemElement.system.systemName
+                x = 28 * this@DotlanSystemElement.displaySystem.scaleX
+                y = 17 * this@DotlanSystemElement.displaySystem.scaleY
                 textAnchor = "middle"
-                style["font-size"] = (9 * displaySystem.scaleX).toInt().toString() + "px"
+                style["font-size"] = (9 * this@DotlanSystemElement.displaySystem.scaleX).toInt().toString() + "px"
                 style["font-family"] = "Arial, Helvetica, sans-serif"
             }
         } else {
             svgText("systemName") {
-                +system.systemName
-                x = 28 * displaySystem.scaleX
-                y = 14 * displaySystem.scaleY
+                +this@DotlanSystemElement.system.systemName
+                x = 28 * this@DotlanSystemElement.displaySystem.scaleX
+                y = 14 * this@DotlanSystemElement.displaySystem.scaleY
                 textAnchor = "middle"
-                style["font-size"] = (9 * displaySystem.scaleX).toInt().toString() + "px"
+                style["font-size"] = (9 * this@DotlanSystemElement.displaySystem.scaleX).toInt().toString() + "px"
                 style["font-family"] = "Arial, Helvetica, sans-serif"
             }
             svgText("regionName") {
-                +system.regionName
-                x = 28 * displaySystem.scaleX
-                y = 21.7 * displaySystem.scaleY
+                +this@DotlanSystemElement.system.regionName
+                x = 28 * this@DotlanSystemElement.displaySystem.scaleX
+                y = 21.7 * this@DotlanSystemElement.displaySystem.scaleY
                 textAnchor = "middle"
-                style["font-size"] = (9 * displaySystem.scaleX).toInt().toString() + "px"
+                style["font-size"] = (9 * this@DotlanSystemElement.displaySystem.scaleX).toInt().toString() + "px"
                 style["font-family"] = "Arial, Helvetica, sans-serif"
             }
         }

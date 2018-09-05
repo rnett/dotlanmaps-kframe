@@ -1,8 +1,7 @@
 package tests
 
-import com.rnett.kframe.dom.body
-import com.rnett.kframe.dom.svg.*
-import com.rnett.kframe.site.site
+import com.rnett.kframe.elements.body
+import com.rnett.kframe.hosts.web.site
 import com.rnett.ligraph.eve.dotlanmaps.kframe.dotlanMap
 import io.ktor.application.Application
 
