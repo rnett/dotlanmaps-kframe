@@ -1,29 +1,31 @@
 package com.rnett.ligraph.eve.dotlanmaps.kframe
 
+import com.rnett.kframe.dom.DisplayElement
 import com.rnett.kframe.dom.Element
+import com.rnett.kframe.dom.StandardDisplayElement
 import com.rnett.kframe.dom.Style
 import com.rnett.kframe.elements.*
 import com.rnett.ligraph.eve.dotlanmaps.*
 
-fun Element.dotlanMap(displayMap: DisplayRegion, width: Int = displayMap.width, height: Int = displayMap.height) = DotlanMapElement(displayMap, width, height, this)
+fun DisplayElement<*>.dotlanMap(displayMap: DisplayRegion, width: Int = displayMap.width, height: Int = displayMap.height) = DotlanMapElement(displayMap, width, height, this)
 
-fun Element.dotlanMap(map: DotlanRegion, width: Int, height: Int): DotlanMapElement{
+fun DisplayElement<*>.dotlanMap(map: DotlanRegion, width: Int, height: Int): DotlanMapElement{
     val d = map.display
     return DotlanMapElement(d, width, height, this)
 }
-fun Element.dotlanMap(map: DotlanRegion, scale: Double = 1.0) = dotlanMap(map.display(scale))
+fun DisplayElement<*>.dotlanMap(map: DotlanRegion, scale: Double = 1.0) = dotlanMap(map.display(scale))
 
-fun Element.dotlanMap(regionName: String, width: Int, height: Int) = this.dotlanMap(DotlanMaps[regionName], width, height)
-fun Element.dotlanMap(regionID: Int, width: Int, height: Int) = this.dotlanMap(DotlanMaps[regionID], width, height)
+fun DisplayElement<*>.dotlanMap(regionName: String, width: Int, height: Int) = this.dotlanMap(DotlanMaps[regionName], width, height)
+fun DisplayElement<*>.dotlanMap(regionID: Int, width: Int, height: Int) = this.dotlanMap(DotlanMaps[regionID], width, height)
 
-fun Element.dotlanMap(regionName: String, scale: Double = 1.0) = this.dotlanMap(DotlanMaps[regionName], scale)
-fun Element.dotlanMap(regionID: Int, scale: Double = 1.0) = this.dotlanMap(DotlanMaps[regionID], scale)
+fun DisplayElement<*>.dotlanMap(regionName: String, scale: Double = 1.0) = this.dotlanMap(DotlanMaps[regionName], scale)
+fun DisplayElement<*>.dotlanMap(regionID: Int, scale: Double = 1.0) = this.dotlanMap(DotlanMaps[regionID], scale)
 
 
 //could probably have just used base and relied on svg for scaling
-class DotlanMapElement(val displayMap: DisplayRegion, width: Int, height: Int, parent: Element) : Svg(parent, {}, "svg", "","id" to "map-${displayMap.base.regionID}") {
+class DotlanMapElement(val displayMap: DisplayRegion, width: Int, height: Int, parent: DisplayElement<*>) : Svg(parent, {}, "svg", "","id" to "map-${displayMap.base.regionID}") {
 
-    constructor(displayMap: DisplayRegion, parent: Element) : this(displayMap, displayMap.width, displayMap.height, parent)
+    constructor(displayMap: DisplayRegion, parent: DisplayElement<*>) : this(displayMap, displayMap.width, displayMap.height, parent)
 
     val jumps: List<DotlanJumpElement>
     val systems: Map<Int, DotlanSystemElement>
