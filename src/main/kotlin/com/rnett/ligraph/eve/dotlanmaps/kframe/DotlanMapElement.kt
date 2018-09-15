@@ -1,8 +1,10 @@
 package com.rnett.ligraph.eve.dotlanmaps.kframe
 
 import com.rnett.kframe.dom.*
-import com.rnett.kframe.elements.*
+import com.rnett.kframe.dom.classes.*
+import com.rnett.kframe.element.Style
 import com.rnett.ligraph.eve.dotlanmaps.*
+import kotlinx.coroutines.experimental.NonCancellable.children
 
 fun AnyDisplayElement.dotlanMap(displayMap: DisplayRegion, width: Int = displayMap.width, height: Int = displayMap.height) = DotlanMapElement(displayMap, width, height, this)
 
@@ -20,7 +22,7 @@ fun AnyDisplayElement.dotlanMap(regionID: Int, scale: Double = 1.0) = this.dotla
 
 
 //could probably have just used base and relied on svg for scaling
-class DotlanMapElement(val displayMap: DisplayRegion, width: Int, height: Int, parent: AnyDisplayElement) : Svg(parent, {}, "svg", "","id" to "map-${displayMap.base.regionID}") {
+class DotlanMapElement(val displayMap: DisplayRegion, width: Int, height: Int, parent: AnyDisplayElement) : Svg(parent, {}, "","id" to "map-${displayMap.base.regionID}") {
 
     constructor(displayMap: DisplayRegion, parent: AnyDisplayElement) : this(displayMap, displayMap.width, displayMap.height, parent)
 
@@ -29,12 +31,12 @@ class DotlanMapElement(val displayMap: DisplayRegion, width: Int, height: Int, p
 
     val map = displayMap.base
 
-    val defs: Defs get() = children.find { it.tag == "defs" } as Defs? ?: defs()
+    val defs: Defs get() = children.find { it.tag == "defs" } as Defs? ?: defs("")
 
-    private val auraG: Svg
-    private val jumpsG: Svg
-    private val regionSysG: Svg
-    private val externalSysG: Svg
+    private val auraG: SvgElement
+    private val jumpsG: SvgElement
+    private val regionSysG: SvgElement
+    private val externalSysG: SvgElement
 
     fun moveMapToFront(){
         children.removeAll(listOf(jumpsG, regionSysG, externalSysG))
@@ -79,7 +81,7 @@ class DotlanMapElement(val displayMap: DisplayRegion, width: Int, height: Int, p
     }
 
     fun removeAura(systemID: Int){
-        auraG.children.removeIf { it.id == "aura-$systemID" }
+        auraG.apply { this.children.removeIf { it.id == "aura-$systemID" } }
     }
 
     init{
@@ -138,7 +140,7 @@ class DotlanMapElement(val displayMap: DisplayRegion, width: Int, height: Int, p
     }
 }
 
-class DotlanJumpElement(val displayJump: DisplayJump, val regionMap: DotlanMapElement, parent: Svg?) : SvgElement(parent, {}, "line", "", "id" to "jump-${displayJump.base.startSystemID}-${displayJump.base.endSystemID}"){
+class DotlanJumpElement(val displayJump: DisplayJump, val regionMap: DotlanMapElement, parent: SvgBase<*>?) : SvgElement(parent, {}, "line", "", "id" to "jump-${displayJump.base.startSystemID}-${displayJump.base.endSystemID}"){
     val jump = displayJump.base
 
     init{
@@ -162,7 +164,7 @@ class DotlanJumpElement(val displayJump: DisplayJump, val regionMap: DotlanMapEl
     }
 }
 
-class DotlanSystemElement(val displaySystem: DisplaySystem, val regionMap: DotlanMapElement, parent: Svg?) : SvgElement(parent, {}, "symbol", "", "id" to "system-${displaySystem.base.systemID}"){
+class DotlanSystemElement(val displaySystem: DisplaySystem, val regionMap: DotlanMapElement, parent: SvgBase<*>?) : SvgElement(parent, {}, "symbol", "", "id" to "system-${displaySystem.base.systemID}"){
     val system = displaySystem.base
 
     val systemRect: SvgElement
@@ -178,7 +180,7 @@ class DotlanSystemElement(val displaySystem: DisplaySystem, val regionMap: Dotla
                 ry = 11 * this@DotlanSystemElement.displaySystem.scaleY
                 width = 50 * this@DotlanSystemElement.displaySystem.scaleX
                 height = 22 * this@DotlanSystemElement.displaySystem.scaleY
-                fill=Style.hex("e6e6e6")
+                fill= Style.hex("e6e6e6")
                 strokeWidth = 1.0
                 stroke = "black"
             }

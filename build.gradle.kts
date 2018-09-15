@@ -3,7 +3,7 @@ import java.net.URL
 
 plugins {
     java
-    kotlin("jvm") version "1.2.51"
+    kotlin("jvm") version "1.2.70"
     `maven-publish`
     maven
 }
@@ -28,7 +28,7 @@ fun getNewestCommit(gitURL: String, default: String = ""): String {
     }
 }
 
-val kframe_version = getNewestCommit("rnett/kframe", "7a891b8488")
+val kframe_version = getNewestCommit("rnett/kframe", "05c3b734a4")
 
 dependencies {
     implementation(kotlin("stdlib-jdk8"))
