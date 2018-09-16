@@ -28,7 +28,7 @@ fun getNewestCommit(gitURL: String, default: String = ""): String {
     }
 }
 
-val kframe_version = getNewestCommit("rnett/kframe", "05c3b734a4")
+val kframe_version = getNewestCommit("rnett/kframe", "28b3f01cac")
 
 dependencies {
     implementation(kotlin("stdlib-jdk8"))
